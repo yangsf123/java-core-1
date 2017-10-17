@@ -1,0 +1,71 @@
+第六章·接口,lambda表达式与内部类
+
+
+内部类的特点：
+    1.内部类方法可以访问该类定义所在的作用域中的数据，包括私有数据
+    2.内部类可以对同一个包中的其他类隐藏起来
+    3.当想要定义一个回调函数且不想编写大量代码时，使用匿名(anonymous)内部类比较便捷
+
+
+在Java中内部类主要分为成员内部类，局部内部类，匿名内部类，静态内部类
+
+1.成员内部类
+    最普通的内部类，它是外围类的一个成员，可以无限制的访问外围内部类的所有成员属性和方法，外围类要访问内部类的成员属性和方法则需要通过内部类实例来访问
+    tips:
+        1.成员内部类中不能存在任何static的变量和方法
+        2.成员内部类是依附于外围类的，所以只有先创建了外围类才能够创建内部类
+
+2.局部内部类
+    它是嵌套在方法和作用于类的，对于这个类的使用主要是应用解决比较复杂的问题，想创建一个类来辅助我们的解决方案，到那时又不希望这个类是公共可用的，所以就产生类局部内部类，局部内部类和成员内部类一样被编译，只是它的作用域发生了改变，它职能在该方法和属性中被使用，出了该方法和属性就会失效
+
+3.匿名内部类
+    1.匿名内部类没有访问修饰符
+    2.new匿名内部类，这个类首先是要存在的。如果我们将哪个InnerClass接口注释掉，就会出现编译出错
+    3.注意getInnerClass()方法的行参，第一个行参是用final修饰的，而第二个却没有。同时我们也发现第二个行参在匿名内部类中没有被使用过，所以当所在方法的星灿需要被匿名内部类使用，那么这个行参就必须为final
+    4.匿名内部类是没有构造方法的。因为它连名字都没有何来构造方法
+
+4.静态内部类
+    使用static修饰的内部类我们称之为静态内部类，不过我们更喜欢称之为嵌套内部类。静态内部类与非静态内部类之间存在一个最大的区别，非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外围内，但是静态内部类缺没有。
+        1.它的创建不需要以来与外围类
+        2.它不能使用任何外围类的非static成员变量和方法
+
+
+
+动态代理
+    利用java反射技术，在运行时创建一个实现某些给定接口的新类(动态代理类)及其实例(对象)
+    (Using Java Reflection to create dynamic implementations of interfaces at runtime)
+    代理的是接口(Interfaces),不是类(Class),更不是抽象类
+
+
+    作用：
+        解决特定问题：一个接口的实现在编译时无法知道，需要在运行时才能实现
+        实现某些设计模式：适配器(Adapter)或修饰器(Decorator)
+        面向切面编程：如AOP in Spring
+
+    创建动态代理
+        利用Java的Proxy类，调用Proxy.newProxyInstance(),创建动态对象十分简单
+        
+        InvocationHandler handler = new MyInvocationHandler(...);
+        Class proxyClass = Proxy.getProxyClass(Foo.class.getClassLoader(), new Class[]{Foo.class});
+        Foo f = (Foo)proxyClass.newInstance(new Object[] { handler });
+
+
+        Proxy.newProxyInstance()方法的三个参数:
+            1.类加载器
+            2.需要实现的接口数组
+            3.InvocationHandler接口。所有动态代理类的方法调用，都会交由InvocationHandler接口实现类里的invoke()方法去处理。这是动态代理的关键所在
+
+    InvocationHandler接口
+        接口里又一个invoke()方法。基本做法是，创建一个类，实现这个方法，利用反射在invoke()方法里实现需求
+        public class MyInvocationHandler implements InvocationHandler {
+            public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+                    // do something "dynamic"
+                }
+        }
+
+
+    invoke()方法同样有三个参数:
+        1.动态代理类的引用，通常情况下不需要它。但可以使用getClass()方法，得到proxy的Class类从而取得实例的类信息
+        2.方法对象的引用，代表被动态代理类调用的方法
+        3.args对象数组，代表被调用方法的参数。

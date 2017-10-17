@@ -1,0 +1,21 @@
+第四章  对象与类
+
+
+
+隐式参数与显式参数
+
+public void raiseSalary(double byPercent) {
+    double raise = salary * byPercent / 100;
+    salary += raise;
+}
+
+number007.raiseSalary(5)    // 对象名number007隐式(implicit)参数,方法名后面括号中的数值5是显式(explicit)参数
+
+静态方法没有隐式参数
+静态方法：
+    不需要访问对象状态，其所需参数都是通过显示参数提供；
+    只需要访问类的静态域
+
+
+封装
+    域访问器：私有数据域；公有的域访问器方法；公有的域更改器方法
